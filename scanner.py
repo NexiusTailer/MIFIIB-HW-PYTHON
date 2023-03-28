@@ -14,7 +14,8 @@ def do_ping_sweep(ip_addr, num_of_host):
 
     if os_type == "Windows":
         response = os.popen(f"ping -n 1 {scanned_ip}")
-    else: # "Darwin", "Linux"
+    else:
+        # "Darwin", "Linux"
         response = os.popen(f"ping -c 1 {scanned_ip}")
 
     alive = "Destination Host Unreachable"
@@ -38,7 +39,8 @@ def sent_http_request(url, method, headers = None, payload = None):
     if method in ("GET", "POST"):
         if method == "GET":
             response = requests.get(url, headers = headers_dict, timeout = (3, 5))
-        else: # "POST"
+        else:
+            # "POST"
             response = requests.post(url, headers = headers_dict, data = payload, timeout = (3, 5))
 
         print(
