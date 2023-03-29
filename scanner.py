@@ -27,7 +27,7 @@ def do_ping_sweep(ip_addr, num_of_host):
 
     print(f"[#] Result of scanning: {scanned_ip} [#]\n{alive}", end = "\n\n")
 
-def sent_http_request(url, method, headers = None, payload = None):
+def send_http_request(url, method, headers = None, payload = None):
     headers_dict = {}
 
     if headers:
@@ -67,4 +67,4 @@ if args.task == "scan":
     for host_num in range(args.num_of_hosts):
         do_ping_sweep(args.ip_address, host_num)
 elif args.task == "sendhttp":
-    sent_http_request(args.target, args.method[0], args.headers, " ".join(args.method[1:]))
+    send_http_request(args.target, args.method[0], args.headers, " ".join(args.method[1:]))
