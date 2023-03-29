@@ -17,5 +17,6 @@ result_func_2 = sent_http_request("https://pastebin.com/raw/7wmiJKnG")
 print("\nReturn values of both functions:", end = "\n\n")
 print(result_func_1, end = "\n\n")
 print(result_func_2["Status"], end = "\n\n")
-print(result_func_2["Headers"])
+print(result_func_2["Headers"], end = "\n\n")
+print(result_func_2["Content"])
 ```
