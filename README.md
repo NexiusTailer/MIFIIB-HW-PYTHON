@@ -12,7 +12,7 @@
 
 ```python
 result_func_1 = do_ping_sweep("192.168.0.1", 3)
-result_func_2 = sent_http_request("https://pastebin.com/raw/7wmiJKnG")
+result_func_2 = send_http_request("https://pastebin.com/raw/7wmiJKnG")
 
 print("\nReturn values of both functions:", end = "\n\n")
 print(result_func_1, end = "\n\n")
