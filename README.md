@@ -43,3 +43,8 @@ python scanner.py scan -i 192.168.1.0 -n 4
 ```
 python scanner.py sendhttp -t https://ya.ru -m GET -hd Content-Type:text
 ```
+
+Режим http request (метод POST):
+```
+python scanner.py sendhttp -t https://ya.ru -m POST lol -hd Content-Type:text
+```
