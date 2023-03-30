@@ -50,7 +50,7 @@ def send_http_request(url, method = "GET", headers = None, payload = None):
         print(
             f"[#] Response status code: {result.status_code}\n"
             f"[#] Response headers: {json.dumps(dict(result.headers), indent = 4, sort_keys = True)}\n"
-            f"[#] Response content:\n {result.text}"
+            f"[#] Response content:\n {result.text}\n"
         )
 
         return {
@@ -87,11 +87,15 @@ class ProcessHandler(BaseHTTPRequestHandler):
             try:
                 payload = json.loads(temp)
             except json.decoder.JSONDecodeError:
-                self.wfile.write("Failed, incorrect payload format".encode())
+                self.wfile.write("Failed, incorrect content format".encode())
                 return
 
-            result = do_ping_sweep(payload["ip_address"], int(payload["num_of_hosts"]))
-            self.wfile.write(f"Result of scanning: {result}".encode())
+            if {"ip_address", "num_of_hosts"} <= payload.keys():
+                print("")
+                result = do_ping_sweep(payload["ip_address"], int(payload["num_of_hosts"]))
+                self.wfile.write(f"Result of scanning: {result}".encode())
+            else:
+                self.wfile.write("Failed, one of the arguments was missed or mistyped".encode())
 
     def do_POST(self):
         temp = self.set_headers()
@@ -102,11 +106,27 @@ class ProcessHandler(BaseHTTPRequestHandler):
             try:
                 payload = json.loads(temp)
             except json.decoder.JSONDecodeError:
-                self.wfile.write("Failed, incorrect payload format".encode())
+                self.wfile.write("Failed, incorrect content format".encode())
                 return
 
-            response = send_http_request(payload["target"], payload["method"], payload["headers"], payload["payload"])
-            self.wfile.write(f"HTTP response: {response}".encode())
+            if {"target", "method", "headers"} <= payload.keys():
+                print("")
+
+                if "http://" not in payload["target"] and "https://" not in payload["target"]:
+                    payload["target"] = "http://" + payload["target"]
+
+                if payload["method"] == "GET":
+                    response = send_http_request(payload["target"], payload["method"], payload["headers"])
+                else:
+                    if "payload" not in payload.keys():
+                        self.wfile.write("Failed, payload argument was missed or mistyped".encode())
+                        return
+
+                    response = send_http_request(payload["target"], payload["method"], payload["headers"], payload["payload"])
+
+                self.wfile.write(f"HTTP response: {response}".encode())
+            else:
+                self.wfile.write("Failed, one of the arguments was missed or mistyped".encode())
 
 httpd = HTTPServer(("0.0.0.0", 8081), ProcessHandler)
 httpd.serve_forever()
