@@ -82,22 +82,30 @@ class ProcessHandler(BaseHTTPRequestHandler):
         temp = self.set_headers()
 
         if not temp:
-            self.wfile.write("Failed, probably bad request".encode())
+            self.wfile.write("Failed, invalid content length".encode())
         else:
-            payload = json.loads(temp)
+            try:
+                payload = json.loads(temp)
+            except json.decoder.JSONDecodeError:
+                self.wfile.write("Failed, incorrect payload format".encode())
+                return
 
-            result = do_ping_sweep(payload["ip_address"], payload["num_of_hosts"])
+            result = do_ping_sweep(payload["ip_address"], int(payload["num_of_hosts"]))
             self.wfile.write(f"Result of scanning: {result}".encode())
 
     def do_POST(self):
         temp = self.set_headers()
 
         if not temp:
-            self.wfile.write("Failed, probably bad request".encode())
+            self.wfile.write("Failed, invalid content length".encode())
         else:
-            payload = json.loads(temp)
+            try:
+                payload = json.loads(temp)
+            except json.decoder.JSONDecodeError:
+                self.wfile.write("Failed, incorrect payload format".encode())
+                return
 
-            response = send_http_request(payload["target"], payload["method"])
+            response = send_http_request(payload["target"], payload["method"], payload["headers"], payload["payload"])
             self.wfile.write(f"HTTP response: {response}".encode())
 
 httpd = HTTPServer(("0.0.0.0", 8081), ProcessHandler)
